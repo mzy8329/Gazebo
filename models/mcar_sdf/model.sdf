@@ -1,0 +1,177 @@
+<?xml version='1.0'?>
+
+<sdf version="1.6">
+    <model name="mcar_sdf">
+        <pose>0 0 0 0 0 0</pose>
+        <static>false</static>
+
+        <link name="chassis">
+            <pose>0 0  0.2 0 0 0</pose>
+            <inertial>
+                <mass>1.0</mass>
+                <inertia>
+                    <ixx>0.01079</ixx>
+                    <iyy>0.02822</iyy>
+                    <izz>0.02407</izz>
+                    <ixy>0</ixy>
+                    <iyz>0</iyz>
+                    <ixz>0</ixz>
+                </inertia>
+            </inertial>
+            <!-- body box -->
+            <collision name="collision">
+                <geometry>
+                    <box>
+                        <size>0.5 0.3 0.2</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <box>
+                        <size>0.5 0.3 0.2</size>
+                    </box>
+                </geometry>
+            </visual>
+
+            <!-- caster ball -->
+            <collision name="collision_caster">
+                <pose>-0.2 0 -0.15</pose>
+                <geometry>
+                    <sphere>
+                        <radius>0.05</radius>
+                    </sphere>
+                </geometry>
+
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0</mu>
+                            <mu2>0</mu2>
+                            <slip1>1.0</slip1>
+                            <slip2>1.0</slip2>
+                        </ode>
+                    </friction>
+                </surface>
+            </collision>
+            <visual name="visual_caster">
+                <pose>-0.2 0 -0.15</pose>
+                <geometry>
+                    <sphere>
+                        <radius>0.05</radius>
+                    </sphere>
+                </geometry>
+            </visual>
+        </link>
+
+        <link name="right_wheel">
+            <pose>0.2  0.21 0.15 1.57 0 0</pose>
+            <collision name="collision">
+                <geometry>
+                    <cylinder>
+                        <radius>0.15</radius>
+                        <length>0.1</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <cylinder>
+                        <radius>0.15</radius>
+                        <length>0.1</length>
+                    </cylinder>    
+                </geometry>
+            </visual>
+        </link>
+
+        <link name="left_wheel">
+            <pose>0.2 -0.21 0.15 1.57 0 0</pose>
+            <collision name="collision">
+                <geometry>
+                    <cylinder>
+                        <radius>0.15</radius>
+                        <length>0.1</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <cylinder>
+                        <radius>0.15</radius>
+                        <length>0.1</length>
+                    </cylinder>    
+                </geometry>
+            </visual>
+        </link>
+
+        <link name="velodyne">
+            <pose>0.15 0 0.38</pose>
+            <visual name="visual">
+                <geometry>
+                    <cylinder>
+                        <radius>0.06</radius>
+                        <length>0.16</length>
+                    </cylinder>
+                </geometry>
+            </visual>
+
+            <collision name="collision">
+                <geometry>
+                    <cylinder>
+                        <radius>0.06</radius>
+                        <length>0.15</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+
+            <sensor name='sensor' type='ray'>
+                <pose frame=''>0 0 0 0 -0 0</pose>
+                <visualize>1</visualize>
+                <update_rate>20</update_rate>
+                <ray>
+                  <noise>
+                    <type>gaussian</type>
+                    <mean>0</mean>
+                    <stddev>0.1</stddev>
+                  </noise>
+                  <scan>
+                    <horizontal>
+                      <samples>32</samples>
+                      <resolution>1</resolution>
+                      <min_angle>-0.535292</min_angle>
+                      <max_angle>0.535292</max_angle>
+                    </horizontal>
+                  </scan>
+                  <range>
+                    <min>0.1</min>
+                    <max>70</max>
+                    <resolution>0.02</resolution>
+                  </range>
+                </ray>
+              </sensor>
+        </link>
+
+        <joint type="fixed" name="Velodyne">
+            <child>velodyne</child>
+            <parent>chassis</parent>
+        </joint>
+
+        <joint type="revolute" name="left_wheel_hinge">
+            <pose>0 -0 0 0 0 0</pose>
+            <child>left_wheel</child>
+            <parent>chassis</parent>
+            <axis>
+                <xyz>0 1 0</xyz>
+            </axis>
+        </joint>
+
+        <joint type="revolute" name="right_wheel_hinge">
+            <pose>0 0 0 0 0 0</pose>
+            <child>right_wheel</child>
+            <parent>chassis</parent>
+            <axis>
+                <xyz>0 1 0</xyz>
+            </axis>
+        </joint>
+    </model>
+</sdf>
