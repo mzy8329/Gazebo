@@ -46,7 +46,7 @@
         <minDepth>0.001</minDepth>
         <maxVel>0.1</maxVel>
         <fdir1>1 0 0</fdir1>
-        <material>Gazebo/Grey</material>
+        <material>Gazebo/Red</material>
     </gazebo>
 
     <!-- right wheel -->
@@ -153,7 +153,8 @@
         </actuator>
     </transmission>
 
-    <!-- sensor -->
+    <!-- plugin control-->
+    <!-- 自己添加使用的控制器 无需写yaml文件 -->
     <!-- 1. laser -->
     <link name="laser">
         <inertial>
@@ -179,7 +180,7 @@
         </collision>
     </link>
 
-    <joint name="laser2bass" type="fixed">
+    <joint name="laser_joint" type="fixed">
         <origin xyz="0.15 0.0 0.35" rpy="0.0 0.0 0.0"/>
         <parent link="chassis"/>
         <child link="laser"/>
@@ -220,15 +221,60 @@
     </gazebo>
 
     <!-- 2. imu -->
-    
-        <!-- ros control plugin  ros_control不能和其他控制器一起使用 下面这段代码为费代码-->
-        <!-- <gazebo>
-            <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-                <robotNamespace>/car_urdf</robotNamespace>
-            </plugin>
-        </gazebo> -->
+    <link name="imu_link">
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <mass value="1e-6"/>
+            <inertia ixx="1e-6" ixy="0.0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6"/>
+        </inertial>
+        <visual name="">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.1 0.1 0.02"/>
+            </geometry>
+            <material name="">
+                <color rgba="1.0 0.0 0.0 1.0"/>
+                <texture filename=""/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.1 0.1 0.02"/>
+            </geometry>
+        </collision>
+    </link>
 
-    <!-- diff controller plugin -->
+    <joint name="imu_joint" type="fixed">
+        <origin xyz="0.0 0.0 0.31" rpy="0.0 0.0 0.0"/>
+        <parent link="chassis"/>
+        <child link="imu_link"/>
+        <axis xyz="0.0 0.0 0.0"/>
+        <limit lower="0.0" upper="0.0" effort="0.0" velocity="0.0"/>
+    </joint>
+
+    <gazebo reference="imu_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+          <always_on>true</always_on>
+          <update_rate>100</update_rate>
+          <visualize>true</visualize>
+          <topic>__default_topic__</topic>
+          <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+            <topicName>mcar_urdf/imu</topicName>
+            <bodyName>imu_link</bodyName>
+            <updateRateHZ>10.0</updateRateHZ>
+            <gaussianNoise>0.0</gaussianNoise>
+            <xyzOffset>0 0 0</xyzOffset>
+            <rpyOffset>0 0 0</rpyOffset>
+            <frameName>imu_link</frameName>
+            <initialOrientationAsReference>false</initialOrientationAsReference>
+          </plugin>
+          <pose>0 0 0 0 0 0</pose>
+        </sensor>
+      </gazebo>
+
+      <!-- 3. diff controller plugin -->
     <gazebo>
         <plugin name="caster_controller" filename="libgazebo_ros_diff_drive.so">
           <alwaysOn>true</alwaysOn>
@@ -251,6 +297,18 @@
           <wheelTorque>6.5</wheelTorque>
           <rosDebugLevel>na</rosDebugLevel>
         </plugin>
-      </gazebo>
+    </gazebo>
+
+
+    <!-- ros control plugin -->
+    <!--
+        使用ros给的控制器,需要写yaml文件
+        ros_control不能和其他控制器一起使用  ros_control 与transmission(执行器)配套使用
+    -->
+    <!-- <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/car_urdf</robotNamespace>
+        </plugin>
+    </gazebo> -->
 
 </robot>
