@@ -302,7 +302,7 @@
 
     <!-- ros control plugin -->
     <!--
-        使用ros给的控制器,需要写yaml文件
+        使用ros给的控制器,需要写yaml文件 
         ros_control不能和其他控制器一起使用  ros_control 与transmission(执行器)配套使用
     -->
     <!-- <gazebo>
